@@ -8,6 +8,7 @@
 //DEPS org.springframework.ai:spring-ai-bedrock-converse:2.0.0-M4
 //DEPS org.springframework.ai:spring-ai-client-chat:2.0.0-M4
 //DEPS org.springframework.ai:spring-ai-mcp:2.0.0-M4
+//DEPS io.modelcontextprotocol.sdk:mcp:1.0.0
 //DEPS io.github.a2asdk:a2a-java-sdk-client:0.3.3.Final
 //DEPS io.github.a2asdk:a2a-java-sdk-client-transport-jsonrpc:0.3.3.Final
 //DEPS software.amazon.awssdk:bedrockruntime:2.41.34
