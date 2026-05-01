@@ -15,7 +15,8 @@ import org.springframework.stereotype.Component;
 
 // TODO 1: Import the MCP annotation classes that will expose your tools over the network.
 //   Hint: The annotations are in org.springframework.ai.mcp.annotation (McpTool, McpToolParam)
-
+import org.springframework.ai.mcp.annotation.McpTool;
+import org.springframework.ai.mcp.annotation.McpToolParam;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -40,9 +41,9 @@ class DiceTools {
     record DiceRollResponse(int[] rolls, int total, String description) {}
 
     // TODO 2: Annotate the method with @McpTool to expose it as an MCP tool
-
+    @McpTool(description = "Rolls a specified number of dice with a specified number of faces. Use this for all dice rolls in the D&D game, including ability score generation and attack rolls.")
     // TODO 3: Annotate each parameter with @McpToolParam
-    DiceRollResponse rollDice(int faces, int count) {
+    DiceRollResponse rollDice(@McpToolParam(description = "The number of faces on each die") int faces, @McpToolParam(description = "The number of dice to roll") int count) {
 
         var rolls = new int[count];
         var total = 0;

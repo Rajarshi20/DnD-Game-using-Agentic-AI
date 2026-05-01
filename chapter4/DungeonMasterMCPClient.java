@@ -26,6 +26,13 @@ import org.springframework.ai.chat.client.ChatClient;
 //     - The HTTP Streamable transport layer
 //     - The MCP protocol schema types
 //   Hint: Check the io.modelcontextprotocol and org.springframework.ai.mcp packages.
+import org.springframework.ai.mcp.client.McpClient;
+import org.springframework.ai.mcp.client.transport.StreamableHttpMcpTransport;
+import org.springframework.ai.mcp.client.tool.SyncMcpToolCallbackProvider;
+
+import io.modelcontextprotocol.client.McpSyncClient;
+import io.modelcontextprotocol.spec.McpSchema;
+
 
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -48,6 +55,8 @@ void main() {
     //   Two steps:
     //   1. Build an HTTP Streamable transport pointing at localhost:8080 with the "/mcp" endpoint.
     //   2. Create a synchronous MCP client using that transport, with a client name and version.
+    var transport = new StreamableHttpMcpTransport("http://localhost:8080/mcp");
+    var mcpClient = new McpSyncClient(transport, "dnd-agent-client", "1.0");
 
     try {
         // TODO 3: Initialize the MCP client, discover tools, and bridge them to Spring AI.
@@ -55,6 +64,12 @@ void main() {
         //   1. Initialize the MCP client connection.
         //   2. List available tools from the server and log them.
         //   3. Use SyncMcpToolCallbackProvider to bridge MCP tools into Spring AI ToolCallbacks.
+        mcpClient.initialize();
+        var tools = mcpClient.listTools();
+        log.info("Discovered {} tools from MCP Server:", tools.size());
+        tools.forEach(tool -> log.info("- {} ({}): {}", tool.name(), tool.description()));
+        var provider = new SyncMcpToolCallbackProvider(mcpClient);
+        var toolCallbacks = provider.getToolCallbacks();
 
         // Step 4: Create AWS Bedrock ChatModel
         var bedrockClient = BedrockRuntimeClient.builder()

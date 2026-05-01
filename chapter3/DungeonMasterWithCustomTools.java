@@ -63,6 +63,7 @@ void main() {
         var response = agent.prompt()
             .user(playerMessage)
             // TODO 4: Pass the DiceTools to the agent using .tools()
+            .tools(new DiceTools())
             .call()
             .content();
 

@@ -6,7 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 // TODO 1: Import @Tool and @ToolParam annotations from Spring AI
-
+import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.ai.tool.annotation.ToolParam;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -20,9 +21,9 @@ class DiceTools {
     record DiceRollResponse(int[] rolls, int total, String description) {}
 
     // TODO 2: Add the @Tool annotation with a description telling the AI when to use this method
-
+    @Tool(description = "Rolls a specified number of dice with a specified number of faces. Use this for all dice rolls in the D&D game, including ability score generation and attack rolls.")
     // TODO 3: Add @ToolParam annotations to each parameter so the AI knows what values to pass
-    DiceRollResponse rollDice(int faces, int count) {
+    DiceRollResponse rollDice(@ToolParam(description = "The number of faces on each die") int faces, @ToolParam(description = "The number of dice to roll") int count) {
 
         var rolls = new int[count];
         var total = 0;

@@ -6,7 +6,7 @@
 //DEPS org.springframework.ai:spring-ai-client-chat:2.0.0-M4
 
 // TODO 1: Add the Spring AI Community agent-utils dependency that provides SmartWebFetchTool.
-
+//DEPS org.springaicommunity:spring-ai-agent-utils:0.7.0
 
 //DEPS software.amazon.awssdk:bedrockruntime:2.41.34
 //DEPS software.amazon.awssdk:auth:2.41.34
@@ -24,7 +24,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
 
 // TODO 2: Import the SmartWebFetchTool class from the community library.
-
+import org.springaicommunity.agent.tools.SmartWebFetchTool;
 
 private static final Logger log = LoggerFactory.getLogger("DungeonMasterWithBuiltInTools");
 
@@ -52,12 +52,34 @@ void main() {
         .bedrockRuntimeClient(bedrockClient)
         .defaultOptions(options)
         .build();
-    var agent = ChatClient.builder(chatModel).build();
+    var agent = ChatClient.builder(chatModel)
+            .defaultSystem("""
+                You are a Dungeon Master (DM) for a Dungeons & Dragons game.
+                Your role:
+                - Create immersive fantasy worlds and scenarios
+                - Narrate scenes vividly with rich descriptions
+                - Guide the player through choices and consequences
+                - Stay in character at all times
+
+                Rules:
+                - Always describe environments, characters, and actions dramatically
+                - Offer 2-4 meaningful choices to the player
+                - Be creative but coherent
+                - Keep responses engaging and concise
+
+                Tone:
+                - Mysterious, adventurous, slightly dramatic
+
+                Never break character unless explicitly asked.
+                """)
+            .build();
 
     // TODO 3: Create a SmartWebFetchTool and use it to equip the agent.
+    SmartWebFetchTool webFetch = SmartWebFetchTool.builder(agent).build();
 
     try {
         var response = agent.prompt()
+            .tools(webFetch) // Equip the agent with the web fetching tool
             .user("Using the website https://en.wikipedia.org/wiki/Dungeons_%26_Dragons tell me the name of the designers of Dungeons and Dragons.")
             .call()
             .content();

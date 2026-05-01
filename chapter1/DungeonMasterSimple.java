@@ -10,7 +10,7 @@
 //RUNTIME_OPTIONS -Daws.region=us-west-2
 
 // TODO 1: Add the SLF4J simple logging dependency so you can see what the agent is thinking
-
+//DEPS org.slf4j:slf4j-simple:2.0.17
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,10 +50,49 @@ void main() {
         .build();
 
     // TODO 2: Build a ChatClient with a system prompt that sets the AI personality
+    var agent = ChatClient.builder(chatModel)
+            .defaultSystem("""
+                You are a Dungeon Master (DM) for a Dungeons & Dragons game.
+                Your role:
+                - Create immersive fantasy worlds and scenarios
+                - Narrate scenes vividly with rich descriptions
+                - Guide the player through choices and consequences
+                - Stay in character at all times
 
+                Rules:
+                - Always describe environments, characters, and actions dramatically
+                - Offer 2-4 meaningful choices to the player
+                - Be creative but coherent
+                - Keep responses engaging and concise
+
+                Tone:
+                - Mysterious, adventurous, slightly dramatic
+
+                Never break character unless explicitly asked.
+                """)
+            .build();
+    //What is ChatClient?
+
+    // In Spring AI ChatClient, ChatClient is the main interface for interacting with LLMs.
+
+    // Think of it as:
+
+    // A wrapper over your model (chatModel)
+    // Handles prompts, context, and responses
+    // Lets you define default behavior once, instead of repeating it every time
 
     // TODO 3: Send a message to the agent and print the response
-    
+    try{
+        var playerMessage = "I enter the ancient dungeon, torch in hand. What do I see?";
+        var response = agent.prompt()
+        .user(playerMessage)
+        .call()
+        .chatResponse();
+        log.info("Player Message: {}", playerMessage);
+        log.info("DM Response: {}", response);
+    } catch (Exception e) {
+        log.error("Error occurred while sending message to agent", e);
+    }
 
     log.info("\n=== Ending Dungeon Master AI Agent ===");
 }
