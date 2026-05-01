@@ -55,8 +55,8 @@ void main() {
     //   Two steps:
     //   1. Build an HTTP Streamable transport pointing at localhost:8080 with the "/mcp" endpoint.
     //   2. Create a synchronous MCP client using that transport, with a client name and version.
-    var transport = new StreamableHttpMcpTransport("http://localhost:8080/mcp");
-    var mcpClient = new McpSyncClient(transport, "dnd-agent-client", "1.0");
+    var transport = new StreamableHttpMcpTransport("http://localhost:8080").endpoint("/mcp").build();
+    var mcpClient = new McpSyncClient(transport).clientInfo("dnd-agent-client", "1.0.0").build();
 
     try {
         // TODO 3: Initialize the MCP client, discover tools, and bridge them to Spring AI.
@@ -69,7 +69,7 @@ void main() {
         log.info("Discovered {} tools from MCP Server:", tools.size());
         tools.forEach(tool -> log.info("- {} ({}): {}", tool.name(), tool.description()));
         var provider = new SyncMcpToolCallbackProvider(mcpClient);
-        var toolCallbacks = provider.getToolCallbacks();
+        ToolCallback[] toolCallbacks = provider.getToolCallbacks();
 
         // Step 4: Create AWS Bedrock ChatModel
         var bedrockClient = BedrockRuntimeClient.builder()
@@ -120,6 +120,7 @@ void main() {
                         // TODO 4: Pass the MCP tools to the agent so it can call the remote dice server.
                         //   Hint: MCP tools are already wrapped as ToolCallback objects, so you need
                         //   a different method than .tools() — check the ChatClient API for the right one.
+                        .toolCallbacks(toolCallbacks) // Pass the MCP tools as ToolCallbacks
                         .call()
                         .content();
 
